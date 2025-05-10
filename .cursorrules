@@ -5,3 +5,90 @@ Use the latest version of Shadcn to install new components, like this command to
 ```bash
 pnpx shadcn@latest add button
 ```
+
+# Feature-Based Architecture Guidelines
+
+## Feature Structure
+
+Each feature should follow this structure:
+
+```
+features/
+  feature-name/
+    api/          # API calls related to this feature
+    components/   # UI components specific to this feature
+    hooks/        # Custom React hooks for this feature
+    routes/       # Route components and definitions
+    schemas/      # Zod schemas for validation
+    store/        # Zustand store slices
+    types/        # TypeScript types and interfaces
+    utils/        # Utility functions specific to this feature
+    index.ts      # Barrel file exporting the public API
+```
+
+## Feature Boundaries
+
+- Features should be self-contained and have minimal dependencies on other features
+- Cross-feature communication should happen through well-defined APIs
+- Shared functionality should be moved to `src/lib`, `src/hooks`, or `src/components`
+- Each feature should have a clear, single responsibility
+
+## State Management
+
+- Use Zustand for global state that needs to be shared across features
+- Keep state as local as possible (component state → feature state → global state)
+- Co-locate state with the components that use it when possible
+- Use the `store` directory within features for feature-specific state
+
+## Data Fetching
+
+- Keep API calls in the `api` directory within each feature
+- Use the apiClient for all API requests
+- Validate API responses using Zod schemas
+- Handle loading and error states consistently
+
+## Component Hierarchy
+
+- Feature components should not be used outside their feature
+- Shared components should be moved to `src/components`
+- Prefer composition over inheritance
+- Use the shadcn/ui components as building blocks
+
+# Barrel File Best Practices
+
+When creating and using barrel files (index.ts) in this project, follow these guidelines:
+
+## Do's
+
+- Use barrel files at the feature level to export public API elements
+- Add JSDoc comments to barrel files explaining their contents
+- Use named exports instead of default exports for better tree-shaking
+- Be selective about what you expose - only export what's needed by other modules
+- Create barrel files for components, hooks, and utilities that are used across features
+
+## Don'ts
+
+- Avoid deeply nested barrel files (no more than 2 levels deep)
+- Don't re-export everything blindly - be intentional about your public API
+- Don't use barrel files for internal implementation details
+- Avoid circular dependencies by carefully planning your exports
+
+## Example Barrel File
+
+```typescript
+/**
+ * Feature public API
+ * Exports components, hooks, and utilities for this feature
+ */
+
+// Re-export specific components
+export { FeatureComponent } from './components/FeatureComponent';
+
+// Re-export hooks
+export { useFeatureHook } from './hooks/useFeatureHook';
+
+// Re-export types
+export type { FeatureType } from './types';
+
+// Note: Internal implementation details are not exported
+```

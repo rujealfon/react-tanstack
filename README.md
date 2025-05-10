@@ -1,299 +1,222 @@
-Welcome to your new TanStack app! 
+# [React Stack] - Modern React Application
 
-# Getting Started
+A scalable React application built with a feature-based architecture, leveraging Vite, TypeScript, Tailwind CSS v4, shadcn/ui, TanStack Router, Zustand, and Zod for a robust, type-safe, and efficient development experience.
 
-To run this application:
+## Core Technologies
+
+*   **React 18+**: For building the user interface.
+*   **Vite**: As the build tool, providing fast development and optimized builds.
+*   **TypeScript**: For strong typing and improved code quality.
+*   **Tailwind CSS v4**: A utility-first CSS framework with its new high-performance engine and Vite plugin.
+*   **shadcn/ui**: Beautifully designed, accessible, and customizable UI components built with Radix UI and Tailwind CSS. Components are added directly to your codebase.
+*   **TanStack Router (React Router v7)**: A fully type-safe router with first-class support for search params, efficient data loading, and nested routing.
+*   **Zustand**: A small, fast, and scalable bearbones state management solution.
+*   **Zod**: A TypeScript-first schema declaration and validation library.
+*   **ofetch**: A lightweight, type-safe fetch API wrapper with automatic JSON parsing and error handling.
+*   **Feature-Based Architecture**: For organizing code by domain/feature, promoting scalability and maintainability.
+
+## Folder Structure Overview
+
+The project follows a feature-based architecture to promote separation of concerns and make it easier to navigate and scale the codebase.
+
+```
+.
+├── public/
+│   └── index.html              # Main HTML template for Vite
+│   └── vite.svg                # Example public asset
+├── src/
+│   ├── App.tsx                 # Root React component, often renders <RouterProvider />
+│   ├── main.tsx                # Application entry point (ReactDOM.render, imports global.css)
+│   ├── router.ts               # TanStack Router: Root route configuration and router instance
+│   │
+│   ├── assets/                 # Global static assets (images, fonts)
+│   │   └── logo.png            # Example application logo
+│   │
+│   ├── components/             # Shared components across features
+│   │   ├── layout/             # Custom layout components
+│   │   │   ├── RootLayout.tsx    # Basic layout for public pages (e.g., header, footer, Outlet)
+│   │   │   ├── DashboardLayout.tsx # Layout for authenticated areas (e.g., Sidebar, Main Content Area with Outlet)
+│   │   │   └── index.ts          # Barrel file for exporting layout components
+│   │   ├── shared/             # Other complex shared components you build
+│   │   │   ├── Sidebar.tsx       # Reusable sidebar component for DashboardLayout
+│   │   │   ├── SidebarLink.tsx   # Component for individual links in the Sidebar
+│   │   │   └── index.ts          # Barrel file for shared components
+│   │   └── ui/                   # SHADCN/UI COMPONENTS (populated by `npx shadcn-ui@latest add ...`)
+│   │       ├── button.tsx        # Example: shadcn/ui Button component source
+│   │       ├── card.tsx          # Example: shadcn/ui Card component source
+│   │       └── ...               # Other shadcn/ui components you add
+│   │
+│   ├── config/                 # Application-wide configuration
+│   │   └── index.ts            # e.g., export const API_BASE_URL = "..."
+│   │
+│   ├── features/               # === FEATURE MODULES ===
+│   │   ├── auth/               # Example: Authentication Feature
+│   │   │   ├── api/
+│   │   │   │   └── authApi.ts    # Functions for auth API calls (login, register, logout)
+│   │   │   ├── components/
+│   │   │   │   └── LoginForm.tsx # UI component for the login form (uses shadcn/ui & Tailwind)
+│   │   │   ├── hooks/
+│   │   │   │   └── useAuth.ts    # Custom hook for accessing auth state/actions
+│   │   │   ├── routes/
+│   │   │   │   ├── LoginPage.tsx # Page component for the /login route
+│   │   │   │   └── index.ts      # Exports TanStack Route objects for this feature's pages
+│   │   │   ├── schemas/
+│   │   │   │   └── loginSchema.ts # Zod schema for login form validation
+│   │   │   ├── store/
+│   │   │   │   └── authStore.ts  # Zustand store slice for authentication state (user, token)
+│   │   │   ├── types/
+│   │   │   │   └── index.ts      # TypeScript types specific to the auth feature (e.g., UserProfile)
+│   │   │   └── index.ts          # Barrel file exporting public parts of the auth feature
+│   │   │
+│   │   ├── users/              # Example: Users Management Feature
+│   │   │   ├── api/
+│   │   │   │   └── usersApi.ts   # Functions for fetching/managing user data
+│   │   │   ├── components/
+│   │   │   │   └── UserTable.tsx # Component to display users in a table (uses shadcn/ui <Table>)
+│   │   │   ├── routes/
+│   │   │   │   └── UsersPage.tsx # Page component for displaying the list of users
+│   │   │   │   └── index.ts      # Exports TanStack Route objects for /users
+│   │   │   ├── schemas/
+│   │   │   │   └── userSchema.ts # Zod schema for user data validation
+│   │   │   ├── store/
+│   │   │   │   └── userStore.ts  # Zustand store for users list, filters, etc.
+│   │   │   └── index.ts          # Barrel file for users feature
+│   │   │
+│   │   └── ...                 # Other features (e.g., products, cart)
+│   │
+│   ├── hooks/                  # Globally shared custom React hooks
+│   │   └── useDebounce.ts      # Example: custom hook for debouncing input
+│   │
+│   ├── lib/                    # Shared utility functions, helpers, class instances
+│   │   ├── apiClient.ts        # Configured API client (e.g., Axios/fetch wrapper with base URL, interceptors)
+│   │   ├── utils.ts            # General utility functions, and importantly, the `cn` function for shadcn/ui
+│   │   └── zodUtils.ts         # (Optional) Zod helper functions if common patterns emerge
+│   │
+│   ├── services/               # (Optional) For more complex, shared business logic not tied to a feature
+│   │   └── notificationService.ts # Example: service for managing toast notifications
+│   │
+│   ├── store/                  # Global Zustand store setup or stores not tied to a specific feature
+│   │   ├── index.ts            # (Optional) Root store if combining slices or exporting all store hooks
+│   │   └── uiStore.ts          # Example: Zustand store for global UI state (theme, modals)
+│   │
+│   ├── styles/                 # Global styles
+│   │   └── global.css          # Contains @tailwind base, components, utilities; and shadcn/ui CSS variables
+│   │
+│   └── types/                  # Global TypeScript types/interfaces
+│       ├── index.ts            # General global types
+│       └── api.ts              # Common API response types (e.g., PaginatedResponse, ApiError)
+│
+├── .env.example                # Template for environment variables
+├── .eslintrc.cjs               # ESLint configuration file
+├── .gitignore                  # Specifies intentionally untracked files that Git should ignore
+├── .prettierrc.json            # Prettier configuration for code formatting
+├── components.json             # SHADCN/UI configuration file (style, paths, etc.)
+├── index.html                  # Main HTML file (often in public/ with Vite, but can be at root)
+├── package.json                # Project metadata, dependencies, and scripts
+├── tailwind.config.ts          # TAILWIND CSS V4 configuration (content paths, theme, plugins)
+├── tsconfig.json               # TypeScript compiler options for the project (includes "paths" for aliases like "@/*")
+├── tsconfig.node.json          # TypeScript compiler options for Node.js specific files (e.g., vite.config.ts)
+└── vite.config.ts              # VITE build tool configuration (plugins, server options, Tailwind CSS v4 plugin)
+```
+
+### Key Directory Explanations:
+
+*   **`src/features/`**: Each sub-directory represents a distinct feature of the application (e.g., authentication, user management, product listings). This co-locates all code related to a specific domain.
+    *   **`api/`**: API request functions, often using the `apiClient` and Zod for response validation.
+    *   **`components/`**: React components exclusively used within this feature. Styled with Tailwind CSS and compose `shadcn/ui` components from `src/components/ui/`.
+    *   **`hooks/`**: Feature-specific React hooks.
+    *   **`routes/`**: Page-level components and TanStack Router `Route` definitions for the feature. These are typically imported and used in `src/router.ts`.
+    *   **`schemas/`**: Zod schemas for validating data within the feature (API payloads, form data, etc.).
+    *   **`store/`**: Zustand store slices relevant to the feature's state.
+    *   **`types/`**: TypeScript interfaces and types specific to this feature.
+*   **`src/components/ui/`**: This directory is managed by `shadcn/ui`. When you run `npx shadcn-ui@latest add <component-name>`, the component's source code is added here. These are then imported and used throughout the application.
+*   **`src/components/layout/`**: Contains custom layout components like `RootLayout.tsx` (for public pages) and `DashboardLayout.tsx` (for authenticated areas, possibly including a `Sidebar`). These layouts use Tailwind for styling and an `<Outlet />` from TanStack Router to render child routes.
+*   **`src/components/shared/`**: Other shared components you build yourself that are not part of `shadcn/ui` but are used across multiple features or layouts (e.g., a custom `Sidebar.tsx`).
+*   **`src/lib/utils.ts`**: Contains utility functions, most notably the `cn` function provided by `shadcn/ui` for merging Tailwind classes.
+*   **`src/router.ts`**: Configures TanStack Router. It defines the root route and assembles the complete route tree by importing route configurations from various features.
+*   **`src/styles/global.css`**: Imports Tailwind's base, components, and utilities. It also contains the CSS variables necessary for `shadcn/ui` theming.
+*   **`tailwind.config.ts`**: Configures Tailwind CSS v4, including content paths, theme customizations (colors, fonts, etc.), and any Tailwind plugins.
+*   **`vite.config.ts`**: Vite configuration file. This is where the Tailwind CSS v4 Vite plugin is integrated, enabling Tailwind processing without a separate PostCSS setup for Tailwind itself.
+*   **`components.json`**: Configuration file for `shadcn/ui`, defining preferences like style, paths, and TypeScript usage.
+
+## Getting Started
+
+### Prerequisites
+
+*   Node.js (LTS version recommended - check `.nvmrc` if present)
+*   npm, yarn, or pnpm
+
+### Installation
+
+1.  **Clone the repository:**
+    ```bash
+    git clone [your-repository-url]
+    cd [project-name]
+    ```
+
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    # or
+    # yarn install
+    # or
+    # pnpm install
+    ```
+
+3.  **Set up environment variables:**
+    Copy the `.env.example` file to a new file named `.env` and fill in the necessary environment variables.
+    ```bash
+    cp .env.example .env
+    ```
+
+### Running the Development Server
 
 ```bash
-bun install
-bun run start  
+npm run dev
+# or
+# yarn dev
+# or
+# pnpm dev
 ```
+This will start the Vite development server, typically available at `http://localhost:5173`.
 
-# Building For Production
+## Key Architectural Decisions
 
-To build this application for production:
+*   **Feature-Based Architecture**: Organizes code by business domain, improving scalability and maintainability. Reduces cognitive load by co-locating related logic.
+*   **Type-Safe Routing (TanStack Router)**: Provides end-to-end type safety for routes, search parameters, and route loaders. `src/router.ts` is the central hub for route definitions.
+*   **Simplified State Management (Zustand)**: Uses a minimalistic API for managing global and feature-specific state. Feature stores are located in `src/features/[featureName]/store/`.
+*   **Schema Validation (Zod)**: Ensures data integrity by validating API responses, form inputs, and potentially state structures. Schemas are defined in `src/features/[featureName]/schemas/`.
+*   **Styling with Tailwind CSS v4 & shadcn/ui**:
+    *   **Tailwind CSS v4**: Leverages its new engine via the Vite plugin for high performance and a utility-first approach to styling. Configuration is in `tailwind.config.ts`.
+    *   **shadcn/ui**: Provides unstyled, accessible, and composable UI components that you own and customize. Components are added to `src/components/ui/` via the CLI (`npx shadcn-ui@latest add ...`). The `cn` utility in `src/lib/utils.ts` is used for class name composition.
+    *   Global styles and CSS variables for shadcn/ui are in `src/styles/global.css`.
 
+## Available Scripts
+
+In the project directory, you can run:
+
+*   **`npm run dev`**: Starts the development server with Vite.
+*   **`npm run build`**: Builds the app for production to the `dist` folder.
+*   **`npm run lint`**: Lints the codebase using ESLint.
+*   **`npm run preview`**: Serves the production build locally for previewing.
+*   **`npm run typecheck`**: Runs the TypeScript compiler to check for type errors.
+
+## Adding shadcn/ui Components
+
+To add new components from shadcn/ui:
 ```bash
-bun run build
+npx shadcn-ui@latest add [component-name]
+# Example: npx shadcn-ui@latest add button card dialog
 ```
+The component files will be added to `src/components/ui/`.
 
-## Testing
+## Further Considerations / Next Steps
 
-This project uses [Vitest](https://vitest.dev/) for testing. You can run the tests with:
+*   **Testing**: Implement unit, integration, and end-to-end tests (e.g., using Vitest, React Testing Library, Playwright/Cypress).
+*   **Internationalization (i18n)**: Add support for multiple languages if needed.
+*   **Error Handling & Reporting**: Implement robust global error handling and integrate an error reporting service (e.g., Sentry).
+*   **CI/CD**: Set up Continuous Integration and Continuous Deployment pipelines.
 
-```bash
-bun run test
-```
+---
 
-## Styling
-
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
-
-
-
-## Shadcn
-
-Add components using the latest version of [Shadcn](https://ui.shadcn.com/).
-
-```bash
-pnpx shadcn@latest add button
-```
-
-
-
-## Routing
-This project uses [TanStack Router](https://tanstack.com/router). The initial setup is a file based router. Which means that the routes are managed as files in `src/routes`.
-
-### Adding A Route
-
-To add a new route to your application just add another a new file in the `./src/routes` directory.
-
-TanStack will automatically generate the content of the route file for you.
-
-Now that you have two routes you can use a `Link` component to navigate between them.
-
-### Adding Links
-
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
-
-```tsx
-import { Link } from "@tanstack/react-router";
-```
-
-Then anywhere in your JSX you can use it like so:
-
-```tsx
-<Link to="/about">About</Link>
-```
-
-This will create a link that will navigate to the `/about` route.
-
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
-
-### Using A Layout
-
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you use the `<Outlet />` component.
-
-Here is an example layout that includes a header:
-
-```tsx
-import { Outlet, createRootRoute } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
-
-import { Link } from "@tanstack/react-router";
-
-export const Route = createRootRoute({
-  component: () => (
-    <>
-      <header>
-        <nav>
-          <Link to="/">Home</Link>
-          <Link to="/about">About</Link>
-        </nav>
-      </header>
-      <Outlet />
-      <TanStackRouterDevtools />
-    </>
-  ),
-})
-```
-
-The `<TanStackRouterDevtools />` component is not required so you can remove it if you don't want it in your layout.
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
-
-
-## Data Fetching
-
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
-
-For example:
-
-```tsx
-const peopleRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: "/people",
-  loader: async () => {
-    const response = await fetch("https://swapi.dev/api/people");
-    return response.json() as Promise<{
-      results: {
-        name: string;
-      }[];
-    }>;
-  },
-  component: () => {
-    const data = peopleRoute.useLoaderData();
-    return (
-      <ul>
-        {data.results.map((person) => (
-          <li key={person.name}>{person.name}</li>
-        ))}
-      </ul>
-    );
-  },
-});
-```
-
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
-
-### React-Query
-
-React-Query is an excellent addition or alternative to route loading and integrating it into you application is a breeze.
-
-First add your dependencies:
-
-```bash
-bun install @tanstack/react-query @tanstack/react-query-devtools
-```
-
-Next we'll need to create a query client and provider. We recommend putting those in `main.tsx`.
-
-```tsx
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
-// ...
-
-const queryClient = new QueryClient();
-
-// ...
-
-if (!rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement);
-
-  root.render(
-    <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-    </QueryClientProvider>
-  );
-}
-```
-
-You can also add TanStack Query Devtools to the root route (optional).
-
-```tsx
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-
-const rootRoute = createRootRoute({
-  component: () => (
-    <>
-      <Outlet />
-      <ReactQueryDevtools buttonPosition="top-right" />
-      <TanStackRouterDevtools />
-    </>
-  ),
-});
-```
-
-Now you can use `useQuery` to fetch your data.
-
-```tsx
-import { useQuery } from "@tanstack/react-query";
-
-import "./App.css";
-
-function App() {
-  const { data } = useQuery({
-    queryKey: ["people"],
-    queryFn: () =>
-      fetch("https://swapi.dev/api/people")
-        .then((res) => res.json())
-        .then((data) => data.results as { name: string }[]),
-    initialData: [],
-  });
-
-  return (
-    <div>
-      <ul>
-        {data.map((person) => (
-          <li key={person.name}>{person.name}</li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-export default App;
-```
-
-You can find out everything you need to know on how to use React-Query in the [React-Query documentation](https://tanstack.com/query/latest/docs/framework/react/overview).
-
-## State Management
-
-Another common requirement for React applications is state management. There are many options for state management in React. TanStack Store provides a great starting point for your project.
-
-First you need to add TanStack Store as a dependency:
-
-```bash
-bun install @tanstack/store
-```
-
-Now let's create a simple counter in the `src/App.tsx` file as a demonstration.
-
-```tsx
-import { useStore } from "@tanstack/react-store";
-import { Store } from "@tanstack/store";
-import "./App.css";
-
-const countStore = new Store(0);
-
-function App() {
-  const count = useStore(countStore);
-  return (
-    <div>
-      <button onClick={() => countStore.setState((n) => n + 1)}>
-        Increment - {count}
-      </button>
-    </div>
-  );
-}
-
-export default App;
-```
-
-One of the many nice features of TanStack Store is the ability to derive state from other state. That derived state will update when the base state updates.
-
-Let's check this out by doubling the count using derived state.
-
-```tsx
-import { useStore } from "@tanstack/react-store";
-import { Store, Derived } from "@tanstack/store";
-import "./App.css";
-
-const countStore = new Store(0);
-
-const doubledStore = new Derived({
-  fn: () => countStore.state * 2,
-  deps: [countStore],
-});
-doubledStore.mount();
-
-function App() {
-  const count = useStore(countStore);
-  const doubledCount = useStore(doubledStore);
-
-  return (
-    <div>
-      <button onClick={() => countStore.setState((n) => n + 1)}>
-        Increment - {count}
-      </button>
-      <div>Doubled - {doubledCount}</div>
-    </div>
-  );
-}
-
-export default App;
-```
-
-We use the `Derived` class to create a new store that is derived from another store. The `Derived` class has a `mount` method that will start the derived store updating.
-
-Once we've created the derived store we can use it in the `App` component just like we would any other store using the `useStore` hook.
-
-You can find out everything you need to know on how to use TanStack Store in the [TanStack Store documentation](https://tanstack.com/store/latest).
-
-# Demo files
-
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
-
-# Learn More
-
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
+This README provides a starting point. Feel free to expand it with more project-specific details as your application grows!
